@@ -18,7 +18,7 @@ typedef struct Player {
 
 typedef struct Scene {
   Player player;
-
+  Circle cursor;
 } Scene;
 
 static Scene scene;
@@ -29,10 +29,11 @@ void process();
 void handle_input();
 
 int main(int argc, char *argv[]) {
-  init();
-  InitWindow(WINDOW_WIDTH, WINDOW_HEIGTH, "Mouse inputs");
   SetConfigFlags(FLAG_VSYNC_HINT);
-  // SetTargetFPS(60);
+  InitWindow(WINDOW_WIDTH, WINDOW_HEIGTH, "Mouse inputs");
+
+  init();
+  HideCursor();
 
   while (!WindowShouldClose()) {
     handle_input();
@@ -53,6 +54,10 @@ void init() {
 
   scene.player.movement_direction = (Vector2){0, 0};
   scene.player.movement_speed = 400.f;
+
+  scene.cursor.position = (Vector2){-100.f, -100.f};
+  scene.cursor.radius = 10.f;
+  scene.cursor.color = GREEN;
 }
 
 void draw() {
@@ -61,6 +66,7 @@ void draw() {
   ClearBackground(RAYWHITE);
   DrawCircleV(scene.player.body.position, scene.player.body.radius,
               scene.player.body.color);
+  DrawCircleV(scene.cursor.position, scene.cursor.radius, scene.cursor.color);
 
   EndDrawing();
 }
@@ -99,5 +105,15 @@ void handle_input() {
     direction = Vector2Normalize(direction);
   }
 
+  if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+    scene.cursor.color = RED;
+  }
+
+  if (IsMouseButtonPressed(MOUSE_RIGHT_BUTTON)) {
+    scene.cursor.color = GREEN;
+  }
+
   scene.player.movement_direction = direction;
+
+  scene.cursor.position = GetMousePosition();
 }
