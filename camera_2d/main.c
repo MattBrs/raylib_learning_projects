@@ -1,3 +1,4 @@
+#include <math.h>
 #include <raylib.h>
 #include <raymath.h>
 #include <stdio.h>
@@ -17,6 +18,8 @@ typedef struct Scene {
   Rectangle prop2;
   Rectangle prop3;
   Camera2D camera;
+  Vector2 cursor_position;
+  bool is_camera_moved;
 } Scene;
 
 static Scene scene;
@@ -29,6 +32,7 @@ void handle_input();
 int main(int argc, char *argv[]) {
   SetConfigFlags(FLAG_VSYNC_HINT);
   InitWindow(SCREEN_WIDTH, SCREEN_HEIGTH, "camera 2d movements");
+  HideCursor();
 
   init();
 
@@ -43,6 +47,8 @@ int main(int argc, char *argv[]) {
 }
 
 void init() {
+  scene.is_camera_moved = false;
+
   scene.player.body.x = (float)SCREEN_WIDTH / 2;
   scene.player.body.y = (float)SCREEN_HEIGTH / 2;
   scene.player.body.width = 50.f;
@@ -87,6 +93,8 @@ void draw() {
 
   EndMode2D();
 
+  DrawCircleV(scene.cursor_position, 5.f, DARKGRAY);
+
   EndDrawing();
 }
 
@@ -97,8 +105,10 @@ void process() {
   scene.player.body.y +=
       frametime * scene.player.direction.y * scene.player.speed;
 
-  scene.camera.target =
-      (Vector2){scene.player.body.x + 20.f, scene.player.body.y + 20.f};
+  if (!scene.is_camera_moved) {
+    scene.camera.target =
+        (Vector2){scene.player.body.x + 20.f, scene.player.body.y + 20.f};
+  }
 
   if (scene.camera.rotation > 45.f) {
     scene.camera.rotation = 45.f;
@@ -139,6 +149,7 @@ void handle_input() {
   if (IsKeyDown(KEY_R)) {
     scene.camera.zoom = 1.f;
     scene.camera.rotation = 0.f;
+    scene.is_camera_moved = false;
   }
 
   if (Vector2Length(direction) != 0) {
@@ -148,5 +159,17 @@ void handle_input() {
   scene.player.direction = direction;
 
   float scroll_whell_value = GetMouseWheelMove();
-  scene.camera.zoom += scroll_whell_value * 0.1;
+  scene.camera.zoom =
+      expf(logf(scene.camera.zoom) + (scroll_whell_value * 0.1));
+
+  scene.cursor_position = GetMousePosition();
+
+  if (IsMouseButtonDown(MOUSE_LEFT_BUTTON)) {
+    Vector2 mouse_delta = GetMouseDelta();
+    if (Vector2Length(mouse_delta) != 0) {
+      scene.is_camera_moved = true;
+      mouse_delta = Vector2Scale(mouse_delta, -1.f / scene.camera.zoom);
+      scene.camera.target = Vector2Add(scene.camera.target, mouse_delta);
+    }
+  }
 }
