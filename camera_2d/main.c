@@ -95,6 +95,13 @@ void draw() {
 
   DrawCircleV(scene.cursor_position, 5.f, DARKGRAY);
 
+  DrawText("Move player (purple) with WASD", 10.f, 10.f, 24, DARKGRAY);
+  DrawText("Zoom camera with mouse wheel", 10.f, 30.f, 24, DARKGRAY);
+  DrawText("Rotate camera with Q/E", 10.f, 50.f, 24, DARKGRAY);
+  DrawText("Move around camera with mouse drag", 10.f, 70.f, 24, DARKGRAY);
+  DrawText("Reset camera rotation, zoom and position with R", 10.f, 90.f, 24,
+           DARKGRAY);
+
   EndDrawing();
 }
 
