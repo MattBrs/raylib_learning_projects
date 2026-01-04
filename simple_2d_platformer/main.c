@@ -21,6 +21,7 @@ int main(int argc, char **argv) {
     scene_manager_process(&scene_manager, &input_state);
 
     if (scene_manager.pending_scene != -1) {
+      printf("next scene requested: %d\n", scene_manager.pending_scene);
       scene_manager_load(&scene_manager, scene_manager.pending_scene);
     }
 
@@ -37,7 +38,7 @@ void draw(SceneManager *scene_manager) {
   BeginDrawing();
   ClearBackground(RAYWHITE);
 
-  scene_manager_draw(scene_manager, GetFrameTime());
+  scene_manager_draw(scene_manager);
 
   EndDrawing();
 }
@@ -46,7 +47,7 @@ InputState handle_input() {
   Vector2 direction = {0, 0};
   InputState input_state = {0};
 
-  if (IsKeyDown(KEY_N)) {
+  if (IsKeyPressed(KEY_N)) {
     input_state.load_next_scene = true;
   }
 

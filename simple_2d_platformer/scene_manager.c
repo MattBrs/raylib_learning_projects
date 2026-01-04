@@ -39,9 +39,9 @@ void scene_manager_load(SceneManager *sc, int scene_id) {
   }
 }
 
-void scene_manager_draw(SceneManager *sc, float delta) {
+void scene_manager_draw(SceneManager *sc) {
   if (sc->scene.data != NULL && sc->scene.draw != NULL) {
-    sc->scene.draw(sc->scene.data, delta);
+    sc->scene.draw(sc->scene.data);
   }
 }
 
