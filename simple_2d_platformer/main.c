@@ -12,6 +12,7 @@ int main(int argc, char **argv) {
   InitWindow(SCREEN_DEFAULT_WIDTH, SCREEN_DEFAULT_HEIGTH,
              "A simple platformer");
 
+  GameState game_state = {9.f};
   SceneManager scene_manager = {0};
   scene_manager_load(&scene_manager, 0x01);
 

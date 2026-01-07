@@ -10,4 +10,8 @@ typedef struct {
   bool load_next_scene;
 } InputState;
 
+typedef struct {
+  float fall_acceleration;
+} GameState;
+
 #endif
