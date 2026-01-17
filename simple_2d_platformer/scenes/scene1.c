@@ -19,7 +19,7 @@ Scene1 *scene1_load() {
   scene_data->rect.width = 40.f;
   scene_data->rect.height = 40.f;
   scene_data->rect.x = 40.f;
-  scene_data->rect.y = 40.f;
+  scene_data->rect.y = 50.f;
 
   scene_data->camera.zoom = 1.f;
   scene_data->camera.rotation = 0.f;
@@ -86,6 +86,10 @@ void scene1_process(void *data, void *context, InputState *input_state,
       (Vector2){scene_data->player_rect.x, scene_data->player_rect.y};
 
   if (input_state->load_next_scene) {
+    request_change(context, 0x02);
+  }
+
+  if (CheckCollisionRecs(scene_data->player_rect, scene_data->rect)) {
     request_change(context, 0x02);
   }
 }

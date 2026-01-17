@@ -7,8 +7,12 @@
 
 typedef struct {
   Camera2D camera;
-  Rectangle rect;
+  Rectangle next_level_rect;
   Rectangle player_rect;
+  bool player_can_jump;
+  float player_fall_speed;
+  Rectangle collision_objects[10];
+  int collision_objects_count;
 } Scene2;
 
 Scene2 *scene2_load();
