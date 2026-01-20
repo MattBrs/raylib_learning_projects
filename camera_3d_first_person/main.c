@@ -1,4 +1,13 @@
 #include <raylib.h>
+#include <raymath.h>
+
+#define MAX_PROPS 32
+
+typedef struct {
+  Color colors[MAX_PROPS];
+  float heights[MAX_PROPS];
+  Vector3 positions[MAX_PROPS];
+} Props;
 
 int main(int argc, char *argv[]) {
   SetConfigFlags(FLAG_VSYNC_HINT | FLAG_WINDOW_RESIZABLE);
@@ -15,12 +24,23 @@ int main(int argc, char *argv[]) {
   camera.projection = CAMERA_PERSPECTIVE;
 
   float movement_speed = 100.f;
+  Props props;
+
+  for (int i = 0; i < MAX_PROPS; ++i) {
+    props.heights[i] = (float)GetRandomValue(1, 32);
+    props.positions[i] = (Vector3){
+        GetRandomValue(-50, 50), props.heights[i] / 2, GetRandomValue(-50, 50)};
+    props.colors[i] = (Color){GetRandomValue(20, 255), GetRandomValue(20, 255),
+                              GetRandomValue(20, 255), 255};
+  }
 
   while (!WindowShouldClose()) {
 
     Vector3 velocity = {0};
+    Vector3 rotation = {0};
     Vector2 direction = {0};
     float frametime = GetFrameTime();
+    Vector2 mouse_delta = GetMouseDelta();
 
     if (IsKeyDown(KEY_W)) {
       direction.y += 1;
@@ -38,13 +58,18 @@ int main(int argc, char *argv[]) {
       direction.x += 1;
     }
 
+    if (Vector2Length(direction) != 0) {
+      direction = Vector2Normalize(direction);
+    }
+
+    if (Vector2Length(mouse_delta) != 0) {
+      rotation = (Vector3){mouse_delta.x * 0.05f, mouse_delta.y * 0.05f, 0.f};
+    }
+
     velocity = (Vector3){direction.y * movement_speed * frametime,
                          direction.x * movement_speed * frametime, 0.f};
 
-    UpdateCameraPro(
-        &camera, velocity,
-        (Vector3){GetMouseDelta().x * 0.05f, GetMouseDelta().y * 0.05f, 0.f},
-        GetMouseWheelMove() * 2.f);
+    UpdateCameraPro(&camera, velocity, rotation, 0.f);
 
     BeginDrawing();
     ClearBackground(SKYBLUE);
@@ -52,6 +77,17 @@ int main(int argc, char *argv[]) {
     BeginMode3D(camera);
 
     DrawPlane((Vector3){0.f, 0.f, 0.f}, (Vector2){100.f, 100.f}, BROWN);
+
+    for (int i = 0; i < MAX_PROPS; ++i) {
+      DrawCube(props.positions[i], 8.f, props.heights[i], 8.f, props.colors[i]);
+      DrawCubeWires(props.positions[i], 8.f, props.heights[i], 8.f,
+                    (Color){100.f, 0.f, 0.f, 255});
+    }
+
+    DrawCube((Vector3){50.f, 30.f, 0.f}, 5.f, 60.f, 100.f, GOLD);
+    DrawCube((Vector3){-50.f, 30.f, 0.f}, 5.f, 60.f, 100.f, GOLD);
+    DrawCube((Vector3){0.f, 30.f, 50.f}, 100.f, 60.f, 5.f, GOLD);
+    DrawCube((Vector3){0.f, 30.f, -50.f}, 100.f, 60.f, 5.f, GOLD);
 
     EndMode3D();
 
